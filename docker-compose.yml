@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: curamed_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: curamed_user
+      POSTGRES_PASSWORD: curamed_secure_password_2026
+      POSTGRES_DB: curamed_pos
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: curamed_app
+    restart: always
+    depends_on:
+      - db
+    ports:
+      - "5000:5000"
+    environment:
+      NODE_ENV: production
+      PORT: 5000
+      JWT_SECRET: curamed_secret_jwt_key_2026_super_secure_medical_pos
+      DATABASE_URL: "postgresql://curamed_user:curamed_secure_password_2026@db:5432/curamed_pos?schema=public"
+
+volumes:
+  postgres_data:
